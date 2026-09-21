@@ -1,11 +1,13 @@
-﻿## Decision and Reasoning
+# Explainability Contract: PackageMedic
 
-PackageMedic makes an assessment by analyzing evidence related to package metadata. It connects detected problems to supporting evidence and practical actions.
+## Decision
 
-## Inputs and Data Sources
+PackageMedic decides whether the repository exposes recognizable package metadata. Missing package manifests are reported as a packaging-readiness finding with a targeted recommendation.
 
-PackageMedic uses source files, configuration, project structure, and relevant package metadata data from the inspected project.
+## Inputs
 
-## Limits and Constraints
+It checks for package.json, pyproject.toml, or pom.xml in the project evidence. The decision uses explicit filename rules.
 
-PackageMedic is limited when required information is missing, inaccessible, generated dynamically, or incomplete.
+## Limits
+
+It does not inspect package-version correctness, publishing configuration, lockfile integrity, or dependency vulnerabilities. Projects using other package systems may require manual review.
