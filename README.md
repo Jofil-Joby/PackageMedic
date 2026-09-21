@@ -1,43 +1,133 @@
 # PackageMedic
 
-> Portable agent for diagnosing missing or unclear package metadata.
+> A portable engineering agent for **package metadata hygiene**.
 
-## What it does
+PackageMedic inspects observable project evidence, detects **missing package manifests**, and produces an explainable improvement plan. Its purpose is not to replace specialist tooling. It provides a focused, auditable diagnostic layer that can travel across agent runtimes.
 
-PackageMedic inspects project structure for common package manifests such as `package.json`, `pyproject.toml`, and `pom.xml`. It turns missing package metadata into a clear improvement recommendation.
+## What makes it different
 
-### Diagnostic fingerprint
-
-**Manifest discovery → packaging signal → evidence → action**
-
-## Why this agent is distinct
-
-PackageMedic is concerned with how a project describes itself as a distributable or runnable unit. It is separate from DependencyMedic: one focuses on the presence of dependency declarations, while PackageMedic focuses on package metadata itself.
-
-## Workflow
+This project follows an **evidence → decision → explanation** model:
 
 ```text
-Project tree
-    ↓
-Package-manifest detector
-    ↓
-Metadata rule
-    ↓
-Evidence
-    ↓
-Packaging improvement plan
+Project
+  ↓
+Scanner
+  ↓
+Domain Evidence
+  ↓
+Deterministic Diagnostic Rule
+  ↓
+Finding + Evidence + Confidence
+  ↓
+Improvement Plan
 ```
+
+The agent does not invent evidence. A finding is tied to what the scanner can actually observe.
+
+## Diagnostic contract
+
+| Layer | PackageMedic behavior |
+| --- | --- |
+| Domain | package metadata hygiene |
+| Primary signal | package.json, pyproject.toml, pom.xml |
+| Remediation | Add the appropriate project manifest |
+| Output | Structured, explainable findings |
+| Uncertainty | Explicitly constrained by available evidence |
+
+## Portable architecture
+
+```text
+                    ┌─────────────────────┐
+                    │   Portable Agent    │
+                    │ identity + behavior  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ↓                ↓                ↓
+          Diagnostic        Duties &         Explainability
+            Logic           Workflow           Contract
+              │
+              ↓
+        Runtime Adapters
+       ┌──────┬──────┬──────┬──────┐
+       ↓      ↓      ↓      ↓
+    OpenAI  CrewAI  Claude  Lyzr
+```
+
+The core diagnostic logic is kept separate from framework-specific adapters. This is the central design idea of the project, not four copies of the same agent wearing different hats.
+
+## Repository structure
+
+```text
+agent.yaml          # Portable identity and passport metadata
+SOUL.md             # Identity, principles, and behavior
+AGENTS.md           # Agent responsibilities
+DUTIES.md           # Maker / Checker workflow
+EXPLAINABILITY.md   # Decision, inputs, limits, and evidence contract
+core/               # Shared result model
+tools/              # Scanner and domain diagnostics
+skills/             # Declared capabilities
+workflows/          # Agent workflows
+adapters/           # Runtime-facing adapters
+tests/              # Deliberately diagnostic project fixtures
+```
+
+## Passport portability
+
+The agent is structured for the OpenGAP passport model and can be exported to:
+
+- OpenAI Agents SDK
+- CrewAI
+- Claude Code
+- Lyzr
+
+The important part is the **portable contract**: identity, behavior, duties, explainability, tools, and skills remain defined independently of a single runtime.
 
 ## Verification
 
-Includes an OpenGAP-compatible passport, package-focused fixture, portability adapters for four targets, explainability contracts, and automated adapter tests.
+The repository includes:
 
-The OpenGAP validator passed and all four generated framework exports have been exercised successfully.
+- Local adapter verification
+- A domain-specific broken-project fixture
+- OpenGAP-compatible passport metadata
+- Explainability requirements
+- Export verification across the supported targets
 
-## Design principle
+The engineering workflow is:
 
-**Metadata is part of the software interface.** PackageMedic surfaces missing project metadata instead of guessing package behavior.
+```text
+Validate passport
+    → Verify adapters
+    → Run diagnostic fixture
+    → Export with OpenGAP
+    → Inspect generated artifacts
+```
 
-## Medic family
+## Scope and limitations
 
-PackageMedic is a specialized packaging diagnostic designed to compose with dependency, deployment, and documentation agents.
+PackageMedic is a focused diagnostic prototype. Its conclusions are limited to the evidence and rules implemented in this repository. It should complement, not replace, production-grade static analysis, security scanners, observability platforms, CI systems, or human review where appropriate.
+
+## Why this project exists
+
+This repository is one member of a deliberately modular **Medic agent family**. Each agent applies the same portable passport architecture to a different engineering failure surface.
+
+That makes the collection useful as an interoperability experiment:
+
+```text
+One passport architecture
+        +
+Different diagnostic domains
+        +
+Multiple agent runtimes
+        =
+Portable engineering-agent family
+```
+
+## Challenge context
+
+Built for the **HiDevs × Lyzr Agent Passport Challenge**, exploring portable agent identity, behavior contracts, explainability, verification, and framework interoperability.
+
+## Author
+
+**Jofil Joby**  
+[GitHub](https://github.com/Jofil-Joby)
